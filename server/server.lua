@@ -2,30 +2,31 @@ VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 
 exports.vorp_inventory:registerUsableItem(Config.Pickaxe, function(data)
 	local _source = data.source
+	local meta = data.item.metadata
+	print(meta.durability)
 	exports.vorp_inventory:closeInventory(_source)
-	TriggerClientEvent("BGS_Mining:AttachPickaxe", _source)
+	TriggerClientEvent("BGS_Mining:AttachPickaxe", _source, meta)
 end)
 
 RegisterServerEvent("BGS_Mining:pickaxecheck")
-AddEventHandler("BGS_Mining:pickaxecheck", function()
+AddEventHandler("BGS_Mining:pickaxecheck", function(metadata)
 	local _source = source
-	local pickaxe = exports.vorp_inventory:getItem(_source, Config.Pickaxe, nil)
+	local pickaxe = exports.vorp_inventory:getItemContainingMetadata(source, Config.Pickaxe, metadata, nil)
 	local meta =  pickaxe["metadata"]
-	if next(meta) == nil then
+	if meta.durability == nil then
 		local durability = 100 - Config.PickaxeDamage
 		VorpInv.subItem(_source, Config.Pickaxe, 1,{})
 		VorpInv.addItem(_source, Config.Pickaxe, 1,{description = "Durability = "..durability,durability = durability})
-		TriggerClientEvent("BGS_Mining:pickaxechecked", _source, false)
+		TriggerClientEvent("BGS_Mining:pickaxechecked", _source, {description = "Durability = "..durability,durability = durability}, false)
 	else
 		local durability = meta.durability - Config.PickaxeDamage
 		local description = "Durability = "
 		VorpInv.subItem(_source, Config.Pickaxe, 1, meta)
 		if 1 > durability then
-			-- VorpInv.addItem(_source, Config.Pickaxe, 1,{description = description.."1",durability = 1})
-			TriggerClientEvent("BGS_Mining:pickaxechecked", _source, true)
+			TriggerClientEvent("BGS_Mining:pickaxechecked", _source, meta, true)
 		else
 			VorpInv.addItem(_source, Config.Pickaxe, 1,{description = description..durability,durability = durability})
-			TriggerClientEvent("BGS_Mining:pickaxechecked", _source, false)
+			TriggerClientEvent("BGS_Mining:pickaxechecked", _source, {description = description..durability,durability = durability}, false)
 		end
 	end
 end)

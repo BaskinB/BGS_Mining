@@ -3,6 +3,7 @@ local MiningGroupName  = CreateVarString(10, 'LITERAL_STRING', "Mine")
 local active = false
 local sleep = true
 local tool
+local metadata = {}
 local hastool = false
 local promptsExist = false
 local mineSpot
@@ -65,15 +66,10 @@ local function Anim(actor, dict, body, duration, flags, introtiming, exittiming)
         local flag = flags or 1
         local intro = tonumber(introtiming) or 1.0
         local exit = tonumber(exittiming) or 1.0
-        timeout = 5
-        while (not HasAnimDictLoaded(dict) and timeout>0) do
-            timeout = timeout-1
-            if timeout == 0 then 
-                print("Animation Failed to Load")
-            end
-            Citizen.Wait(300)
+        while (not HasAnimDictLoaded(dict)) do
+            Citizen.Wait(10)
         end
-        TaskPlayAnim(actor, dict, body, intro, exit, dur, flag --[[1 for repeat--]], 1, false, false, false, 0, true)
+        TaskPlayAnim(actor, dict, body, intro, exit, dur, flag, 1, false, false, false)
     end)
 end
 
@@ -179,25 +175,13 @@ local function goMine()
     FreezeEntityPosition(PlayerPedId(), false)
 end
 
-RegisterNetEvent('BGS_Mining:AttachPickaxe')
-AddEventHandler('BGS_Mining:AttachPickaxe', function()
-    if not hastool then
-        EquipTool()
-    else
-        UnequipTool()
-    end
-end)
-
-RegisterNetEvent('BGS_Mining:RemovePickaxe')
-AddEventHandler('BGS_Mining:RemovePickaxe', function()
-    UnequipTool()
-end)
-
 -- draw marker if set to true in config
 CreateThread(function()
     while true do
+        local ped = PlayerPedId()
+        local coords = GetEntityCoords(ped)
         for mining, v in pairs(Config.MiningLocations) do
-            if v.showmarker == true and hastool then
+            if v.showmarker == true and hastool and GetDistanceBetweenCoords(coords, v.coords, true) < 100 then
                 Citizen.InvokeNative(0x2A32FAA57B937173, 0x07DCE236, v.coords.x, v.coords.y, v.coords.z-1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 215, 0, 155, false, false, false, 1, false, false, false)
             end
         end
@@ -227,7 +211,7 @@ CreateThread(function()
                 mineSpot = v
                 SetCurrentPedWeapon(playerped, GetHashKey("WEAPON_UNARMED"), true, 0, false, false)
                 Citizen.Wait(500)
-                TriggerServerEvent("BGS_Mining:pickaxecheck")
+                TriggerServerEvent("BGS_Mining:pickaxecheck", metadata)
             end
         end
     end
@@ -253,8 +237,25 @@ CreateThread(function()
     end
 end)
 
+RegisterNetEvent('BGS_Mining:AttachPickaxe')
+AddEventHandler('BGS_Mining:AttachPickaxe', function(meta)
+    if not hastool then
+        EquipTool()
+    else
+        UnequipTool()
+    end
+    metadata = meta
+end)
+
+RegisterNetEvent('BGS_Mining:RemovePickaxe')
+AddEventHandler('BGS_Mining:RemovePickaxe', function()
+    UnequipTool()
+end)
+
 RegisterNetEvent("BGS_Mining:pickaxechecked")
-AddEventHandler("BGS_Mining:pickaxechecked", function(broken)
+AddEventHandler("BGS_Mining:pickaxechecked", function(meta, broken)
+    metadata = meta
+    print(metadata)
     if broken then
         TriggerEvent("vorp:TipRight", "Your pickaxe broke!", 3000)
         UnequipTool()
