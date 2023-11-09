@@ -199,11 +199,10 @@ CreateThread(function()
         local ped = PlayerPedId()
         local coords = GetEntityCoords(ped)
         for mining, v in pairs(Config.MiningLocations) do
-            if hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and not contains(Mined, v) then
+            if hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and not contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
                 PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
                 PromptSetEnabled(MinePrompt, true)
-            end
-            if hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and contains(Mined, v) then
+            elseif hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
                 PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
                 PromptSetEnabled(MinePrompt, false)
             end
@@ -224,6 +223,7 @@ CreateThread(function()
             DisableControlAction(0, 0x07CE1E61, false)
             DisableControlAction(0, 0xB2F377E8, false)
             DisableControlAction(0, 0xADEAF48C, false)
+            Citizen.InvokeNative(0xFCCC886EDE3C63EC, PlayerPedId(), 2, true)
         end
     end
 end)
