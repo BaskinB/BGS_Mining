@@ -3,7 +3,6 @@ VorpInv = exports.vorp_inventory:vorp_inventoryApi()
 exports.vorp_inventory:registerUsableItem(Config.Pickaxe, function(data)
 	local _source = data.source
 	local meta = data.item.metadata
-	print(meta.durability)
 	exports.vorp_inventory:closeInventory(_source)
 	TriggerClientEvent("BGS_Mining:AttachPickaxe", _source, meta)
 end)
