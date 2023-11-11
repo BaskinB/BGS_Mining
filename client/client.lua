@@ -43,10 +43,10 @@ local function FPrompt(text, button, hold)
     end)
 end
 
-local function LMPrompt(text, button)
+local function LMPrompt(button)
     Citizen.CreateThread(function()
         UsePrompt=nil
-        local str = text or "Use"
+        local str = "Swing"
         local buttonhash = button or Config.MineRockKey
         UsePrompt = PromptRegisterBegin()
         PromptSetControlAction(UsePrompt, buttonhash)
@@ -175,55 +175,38 @@ local function goMine()
     FreezeEntityPosition(PlayerPedId(), false)
 end
 
--- draw marker if set to true in config
-CreateThread(function()
-    while true do
-        local ped = PlayerPedId()
-        local coords = GetEntityCoords(ped)
-        for mining, v in pairs(Config.MiningLocations) do
-            if v.showmarker == true and hastool and GetDistanceBetweenCoords(coords, v.coords, true) < 100 then
-                Citizen.InvokeNative(0x2A32FAA57B937173, 0x07DCE236, v.coords.x, v.coords.y, v.coords.z-1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 215, 0, 155, false, false, false, 1, false, false, false)
-            end
-        end
-        Wait(0)
-    end
-end)
-
 -- mining locations
 CreateThread(function()
     FPrompt()
-    LMPrompt("Swing", Config.MineRockKey)
+    LMPrompt(Config.MineRockKey)
     Mine()
     while true do
         Wait(1)
         local ped = PlayerPedId()
         local coords = GetEntityCoords(ped)
-        for mining, v in pairs(Config.MiningLocations) do
-            if hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and not contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
-                PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
-                PromptSetEnabled(MinePrompt, true)
-            elseif hastool and GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
-                PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
-                PromptSetEnabled(MinePrompt, false)
-            end
-            if PromptHasHoldModeCompleted(MinePrompt) and GetDistanceBetweenCoords(coords, v.coords) < 1.0 then
-                mineSpot = v
-                SetCurrentPedWeapon(playerped, GetHashKey("WEAPON_UNARMED"), true, 0, false, false)
-                Citizen.Wait(500)
-                TriggerServerEvent("BGS_Mining:pickaxecheck", metadata)
-            end
-        end
-    end
-end)
-
-CreateThread(function()
-    while true do
-        Wait(1)
         if hastool then
             DisableControlAction(0, 0x07CE1E61, false)
             DisableControlAction(0, 0xB2F377E8, false)
             DisableControlAction(0, 0xADEAF48C, false)
             Citizen.InvokeNative(0xFCCC886EDE3C63EC, PlayerPedId(), 2, true)
+            for mining, v in pairs(Config.MiningLocations) do
+                if GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and not contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
+                    PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
+                    PromptSetEnabled(MinePrompt, true)
+                elseif GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
+                    PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
+                    PromptSetEnabled(MinePrompt, false)
+                end
+                if v.showmarker == true and GetDistanceBetweenCoords(coords, v.coords, true) < 100 then
+                    Citizen.InvokeNative(0x2A32FAA57B937173, 0x07DCE236, v.coords.x, v.coords.y, v.coords.z-1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 215, 0, 155, false, false, false, 1, false, false, false)
+                end
+                if PromptHasHoldModeCompleted(MinePrompt) and GetDistanceBetweenCoords(coords, v.coords) < 1.0 then
+                    mineSpot = v
+                    SetCurrentPedWeapon(playerped, GetHashKey("WEAPON_UNARMED"), true, 0, false, false)
+                    Citizen.Wait(500)
+                    TriggerServerEvent("BGS_Mining:pickaxecheck", metadata)
+                end
+            end
         end
     end
 end)
