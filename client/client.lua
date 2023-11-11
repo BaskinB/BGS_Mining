@@ -43,10 +43,10 @@ local function FPrompt(text, button, hold)
     end)
 end
 
-local function LMPrompt(button)
+local function LMPrompt(text, button)
     Citizen.CreateThread(function()
         UsePrompt=nil
-        local str = "Swing"
+        local str = text or "Use"
         local buttonhash = button or Config.MineRockKey
         UsePrompt = PromptRegisterBegin()
         PromptSetControlAction(UsePrompt, buttonhash)
@@ -178,7 +178,7 @@ end
 -- mining locations
 CreateThread(function()
     FPrompt()
-    LMPrompt(Config.MineRockKey)
+    LMPrompt("Swing", Config.MineRockKey)
     Mine()
     while true do
         Wait(1)
