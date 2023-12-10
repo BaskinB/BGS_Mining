@@ -10,9 +10,14 @@ end)
 RegisterServerEvent("BGS_Mining:pickaxecheck")
 AddEventHandler("BGS_Mining:pickaxecheck", function(metadata)
 	local _source = source
+	local meta
 	if _source then
 		local pickaxe = exports.vorp_inventory:getItemContainingMetadata(_source, Config.Pickaxe, metadata, nil)
-		local meta =  pickaxe["metadata"]
+		if pickaxe then
+			meta = pickaxe["metadata"]
+		else
+			meta = metadata
+		end
 		if meta.durability == nil then
 			local durability = 100 - Config.PickaxeDamage
 			VorpInv.subItem(_source, Config.Pickaxe, 1,{})
