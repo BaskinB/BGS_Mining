@@ -177,7 +177,7 @@ end
 
 -- mining locations
 CreateThread(function()
-    FPrompt()
+    FPrompt("Put Away")
     LMPrompt("Swing", Config.MineRockKey)
     Mine()
     while true do
