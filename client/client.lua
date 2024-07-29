@@ -99,13 +99,14 @@ local function EquipTool()
     end
     Wait(500)
     local ped = PlayerPedId()
-    tool = CreateObject(joaat("p_pickaxe01x"), GetOffsetFromEntityInWorldCoords(ped,0.0,0.0,0.0), true, true, true)
-    AttachEntityToEntity(tool, ped, GetPedBoneIndex(ped, 7966), 0.0,0.0,0.0,  0.0,0.0,0.0, 0, 0, 0, 0, 2, 1, 0, 0);
     -- Citizen.InvokeNative(0x923583741DC87BCE, ped, 'arthur_healthy')
     Citizen.InvokeNative(0x89F5E7ADECCCB49C, ped, "carry_pitchfork")
     Citizen.InvokeNative(0x2208438012482A1A, ped, true, true)
     ForceEntityAiAndAnimationUpdate(tool, true)
     Citizen.InvokeNative(0x3A50753042B6891B, ped, "PITCH_FORKS")
+    Wait(50)
+    tool = CreateObject(joaat("p_pickaxe01x"), GetOffsetFromEntityInWorldCoords(ped, 0.0 ,0.0, 0.0), true, true, true)
+    AttachEntityToEntity(tool, ped, GetPedBoneIndex(ped, 7966), 0.0,0.0,0.0,  0.0,0.0,0.0, 0, 0, 0, 0, 2, 1, 0, 0)
     Wait(500)
 end
 
