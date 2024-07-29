@@ -1,11 +1,8 @@
 local MinePrompt
-local MiningGroupName  = CreateVarString(10, 'LITERAL_STRING', "Mine")
 local active = false
-local sleep = true
 local tool
 local metadata = {}
 local hastool = false
-local promptsExist = false
 local mineSpot
 local Mined = {}
 
@@ -25,7 +22,6 @@ end
 
 local function FPrompt(text, button, hold)
     Citizen.CreateThread(function()
-        proppromptdisplayed=false
         PropPrompt=nil
         local str = text or "Put Away"
         local buttonhash = button or Config.StopMiningKey
@@ -39,7 +35,6 @@ local function FPrompt(text, button, hold)
         PromptSetGroup(PropPrompt, RockGroup)
         PromptSetHoldMode(PropPrompt, holdbutton)
         PromptRegisterEnd(PropPrompt)
-        sleep = true
     end)
 end
 
@@ -47,7 +42,7 @@ local function LMPrompt(text, button)
     Citizen.CreateThread(function()
         UsePrompt=nil
         local str = text or "Use"
-        local buttonhash = button or Config.MineRockKey
+        local buttonhash = button or Config.MineKey
         UsePrompt = PromptRegisterBegin()
         PromptSetControlAction(UsePrompt, buttonhash)
         str = CreateVarString(10, 'LITERAL_STRING', str)
@@ -83,7 +78,7 @@ end
 
 local function Mine()
     Citizen.CreateThread(function()
-        local str = 'Mine'
+        local str = Config.Language.MinePrompt
         MinePrompt = Citizen.InvokeNative(0x04F97DE45A519419)
         PromptSetControlAction(MinePrompt, Config.MinePromptKey)
         str = CreateVarString(10, 'LITERAL_STRING', str)
@@ -106,21 +101,23 @@ local function EquipTool()
     local ped = PlayerPedId()
     tool = CreateObject(joaat("p_pickaxe01x"), GetOffsetFromEntityInWorldCoords(ped,0.0,0.0,0.0), true, true, true)
     AttachEntityToEntity(tool, ped, GetPedBoneIndex(ped, 7966), 0.0,0.0,0.0,  0.0,0.0,0.0, 0, 0, 0, 0, 2, 1, 0, 0);
-    Citizen.InvokeNative(0x923583741DC87BCE, ped, 'arthur_healthy')
+    -- Citizen.InvokeNative(0x923583741DC87BCE, ped, 'arthur_healthy')
     Citizen.InvokeNative(0x89F5E7ADECCCB49C, ped, "carry_pitchfork")
     Citizen.InvokeNative(0x2208438012482A1A, ped, true, true)
-    ForceEntityAiAndAnimationUpdate(tool, 1)
+    ForceEntityAiAndAnimationUpdate(tool, true)
     Citizen.InvokeNative(0x3A50753042B6891B, ped, "PITCH_FORKS")
     Wait(500)
 end
 
 local function UnequipTool()
     local ped = PlayerPedId()
-    hastool = false
-    Citizen.InvokeNative(0x923583741DC87BCE, ped, 'default')
-    Citizen.InvokeNative(0x89F5E7ADECCCB49C, ped, "default")
-    Citizen.InvokeNative(0x2208438012482A1A, ped, true, true)
     DeleteObject(tool)
+    hastool = false
+    -- Citizen.InvokeNative(0x923583741DC87BCE, ped, 'DEFAULT')
+    Citizen.InvokeNative(0x89F5E7ADECCCB49C, ped, "normal")
+    Citizen.InvokeNative(0x2208438012482A1A, ped, true, true)
+    ForceEntityAiAndAnimationUpdate(ped, true)
+    ClearPedTasks(ped)
 end
 
 local function goMine()
@@ -134,13 +131,14 @@ local function goMine()
     PromptSetVisible(UsePrompt, true)
     PromptSetVisible(MinePrompt, false)
     while active do
+        local MiningGroupName  = CreateVarString(10, 'LITERAL_STRING', Config.Language.PromptLabel)
         PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
         FreezeEntityPosition(PlayerPedId(), true)
         if IsPedDeadOrDying(PlayerPedId(), true) then
             swing = 0
             active = false
             UnequipTool()
-        elseif IsControlJustPressed(0, Config.MineRockKey) then
+        elseif IsControlJustPressed(0, Config.MineKey) then
             local randomizer =  math.random(Config.maxDifficulty,Config.minDifficulty)
             swing = swing + 1
             Anim(ped,'amb_work@world_human_pickaxe_new@working@male_a@trans','pre_swing_trans_after_swing',-1,0)
@@ -177,8 +175,8 @@ end
 
 -- mining locations
 CreateThread(function()
-    FPrompt()
-    LMPrompt("Swing", Config.MineRockKey)
+    FPrompt(Config.Language.StopPrompt)
+    LMPrompt(Config.Language.SwingPrompt, Config.MineKey)
     Mine()
     while true do
         Wait(1)
@@ -191,9 +189,11 @@ CreateThread(function()
             Citizen.InvokeNative(0xFCCC886EDE3C63EC, PlayerPedId(), 2, true)
             for mining, v in pairs(Config.MiningLocations) do
                 if GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and not contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
+                    local MiningGroupName  = CreateVarString(10, 'LITERAL_STRING', Config.Language.PromptLabel)
                     PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
                     PromptSetEnabled(MinePrompt, true)
                 elseif GetDistanceBetweenCoords(coords, v.coords) < 1.0 and not active and contains(Mined, v) and not IsPedOnMount(ped) and not IsPedInAnyVehicle(ped) and not IsPedDeadOrDying(ped) then
+                    local MiningGroupName  = CreateVarString(10, 'LITERAL_STRING', Config.Language.PromptLabel)
                     PromptSetActiveGroupThisFrame(RockGroup, MiningGroupName)
                     PromptSetEnabled(MinePrompt, false)
                 end

@@ -1,12 +1,12 @@
 Config = {}
 
-Config.MinSwing = 1 -- Min Swings on a Rock
-Config.MaxSwing = 3 -- Max Swings on a Rock
+Config.MinSwing = 1 -- Min Swings on a node
+Config.MaxSwing = 3 -- Max Swings on a node
 
 Config.Pickaxe = "pickaxe" -- Item from your database that you want to use for a pickaxe
 Config.MinePromptKey = 0xD9D0E1C0 -- Key used to start Mining (Spacebar)
 Config.StopMiningKey = 0x3B24C470 -- Key to stop Mining (F)
-Config.MineRockKey = 0x07B8BEAF -- Key to Mine Rock (Left Click)
+Config.MineKey = 0x07B8BEAF -- Key to Mine node (Left Click)
 
 Config.PickaxeDamage = 5    -- Amount of damage done to pickaxe durability per mining node
 
@@ -14,6 +14,13 @@ Config.PickaxeDamage = 5    -- Amount of damage done to pickaxe durability per m
 Config.minDifficulty = 4000
 Config.maxDifficulty = 2700
 ---------------------------
+
+Config.Language = {
+    PromptLabel = "Mining",
+    MinePrompt = "Mine",
+    SwingPrompt = "Swing",
+    StopPrompt = "Put Away"
+}
 
 -- mining locations
 Config.MiningLocations = {
