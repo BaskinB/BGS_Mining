@@ -1,3 +1,23 @@
+--       ___          ___          ___
+--      /\  \        /\  \        /\  \
+--     /::\  \      /::\  \      /::\  \
+--    /:/\:\  \    /:/\:\  \    /:/\ \  \
+--   /::\~\:\__\  /:/  \:\  \  _\:\~\ \  \
+--  /:/\:\ \:|__|/:/__/_\:\__\/\ \:\ \ \__\
+--  \:\~\:\/:/  /\:\  /\ \/__/\:\ \:\ \/__/
+--   \:\ \::/  /  \:\ \:\__\   \:\ \:\__\
+--    \:\/:/  /    \:\/:/  /    \:\/:/  /
+--     \::/__/      \::/  /      \::/  /
+--      ‾‾           \/__/        \/__/
+
+-- BGS Mining
+-- Author: Snapopotamus
+-- © 2024
+-- A mining system for RedM servers. Based off of a mixture of RSG Mining and VORP Mining. All due credits to the creators and contributors of those projects.
+-- Compatible with VORPCore.
+
+---------------------------------------------------------------------------------------------
+
 Config = {}
 
 Config.MinSwing = 1 -- Min Swings on a node
