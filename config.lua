@@ -30,6 +30,8 @@ Config.MineKey = 0x07B8BEAF -- Key to Mine node (Left Click)
 
 Config.PickaxeDamage = 5    -- Amount of damage done to pickaxe durability per mining node
 
+Config.UseMinigame = true -- Use the minigame or not
+
 ----- lower number is harder
 Config.minDifficulty = 4000
 Config.maxDifficulty = 2700

@@ -143,8 +143,12 @@ local function goMine()
             local randomizer =  math.random(Config.maxDifficulty,Config.minDifficulty)
             swing = swing + 1
             Anim(ped,'amb_work@world_human_pickaxe_new@working@male_a@trans','pre_swing_trans_after_swing',-1,0)
-            local testplayer = exports["syn_minigame"]:taskBar(randomizer,7)
-            if testplayer == 100 then 
+            if Config.UseMinigame then
+                local testplayer = exports["syn_minigame"]:taskBar(randomizer,7)
+                if testplayer == 100 then 
+                    TriggerServerEvent('BGS_Mining:addItem', mineSpot)
+                end
+            else
                 TriggerServerEvent('BGS_Mining:addItem', mineSpot)
             end
             Wait(500)
