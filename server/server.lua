@@ -75,7 +75,7 @@ AddEventHandler('BGS_Mining:addItem', function(mineSpot)
 			table.insert(reward, v)
 		end
 	end
-	if reward then
+	if reward and #reward > 0 then
 		local chance2 = math.random(1, keysx(reward))
 		local count = math.random(1, reward[chance2].amount)
 		TriggerEvent("vorpCore:canCarryItems", tonumber(_source), count, function(canCarry)
