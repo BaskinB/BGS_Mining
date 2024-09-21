@@ -75,18 +75,20 @@ AddEventHandler('BGS_Mining:addItem', function(mineSpot)
 			table.insert(reward, v)
 		end
 	end
-	if reward and #reward > 0 then
-		local chance2 = math.random(1, keysx(reward))
-		local count = math.random(1, reward[chance2].amount)
-		TriggerEvent("vorpCore:canCarryItems", tonumber(_source), count, function(canCarry)
-			TriggerEvent("vorpCore:canCarryItem", tonumber(_source), reward[chance2].name, count, function(canCarry2)
-				if canCarry and canCarry2 then
-					VorpInv.addItem(_source, reward[chance2].name, count)
-					TriggerClientEvent("vorp:TipRight", _source, "You found " .. reward[chance2].label, 3000)
-				else
-					TriggerClientEvent("vorp:TipRight", _source, "You can't carry any more " .. reward[chance2].label, 3000)
-				end
-			end)
-		end)
+	if reward and #reward < 1 then
+		TriggerClientEvent("vorp:TipRight", _source, "You found nothing", 3000)
+		return
 	end
+	local chance2 = math.random(1, keysx(reward))
+	local count = math.random(1, reward[chance2].amount)
+	TriggerEvent("vorpCore:canCarryItems", tonumber(_source), count, function(canCarry)
+		TriggerEvent("vorpCore:canCarryItem", tonumber(_source), reward[chance2].name, count, function(canCarry2)
+			if canCarry and canCarry2 then
+				VorpInv.addItem(_source, reward[chance2].name, count)
+				TriggerClientEvent("vorp:TipRight", _source, "You found " .. reward[chance2].label, 3000)
+			else
+				TriggerClientEvent("vorp:TipRight", _source, "You can't carry any more " .. reward[chance2].label, 3000)
+			end
+		end)
+	end)
 end)
