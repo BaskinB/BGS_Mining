@@ -100,6 +100,19 @@ AddEventHandler("BGS_Mining:addItem", function(mineSpot)
 	end
 
 	if reward and #reward < 1 then
+		-- if the player's chance is too low, give them a rock
+		if mineSpot.basicItem then
+			TriggerEvent("vorpCore:canCarryItem", tonumber(_source), mineSpot.basicItem, 1, function(canCarry)
+				if canCarry then
+					VorpInv.addItem(_source, mineSpot.basicItem, 1)
+					TriggerClientEvent("vorp:TipRight", _source, "You found nothing but a rock", 3000)
+				else
+					TriggerClientEvent("vorp:TipRight", _source, "You can't carry any more rocks", 3000)
+				end
+			end)
+			return
+		end
+
 		TriggerClientEvent("vorp:TipRight", _source, "You found nothing", 3000)
 		return
 	end
